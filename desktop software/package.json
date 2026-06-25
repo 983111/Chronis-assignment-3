@@ -1,0 +1,27 @@
+{
+  "name": "chronis-csa",
+  "version": "1.0.0",
+  "description": "Chronis Context Shadow Architecture — native desktop app",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build:linux": "electron-builder --linux",
+    "build:win": "electron-builder --win",
+    "build:mac": "electron-builder --mac"
+  },
+  "build": {
+    "appId": "ai.chronis.csa",
+    "productName": "Chronis",
+    "directories": { "output": "dist" },
+    "linux": {
+      "target": ["AppImage", "deb"],
+      "category": "Utility"
+    },
+    "win": { "target": "nsis" },
+    "mac": { "target": "dmg" }
+  },
+  "devDependencies": {
+    "electron": "^36.4.0",
+    "electron-builder": "^26.0.12"
+  }
+}

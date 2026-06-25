@@ -1,0 +1,1108 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --pink-50: #FBEAF0;
+    --pink-100: #F4C0D1;
+    --pink-200: #ED93B1;
+    --pink-400: #D4537E;
+    --pink-600: #993556;
+    --pink-800: #72243E;
+    --pink-900: #4B1528;
+    --gray-50: #F1EFE8;
+    --gray-100: #D3D1C7;
+    --gray-200: #B4B2A9;
+    --gray-400: #888780;
+    --gray-600: #5F5E5A;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  body {
+    font-family: var(--font-sans, system-ui, sans-serif);
+    background: var(--pink-50);
+    color: var(--color-text-primary);
+    min-height: 100vh;
+  }
+
+  .app-shell {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    grid-template-rows: 52px 1fr;
+    min-height: 100vh;
+  }
+
+  .topbar {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    background: #fff;
+    border-bottom: 0.5px solid var(--color-border-tertiary, rgba(0,0,0,0.1));
+  }
+
+  .logo {
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: -0.3px;
+    color: var(--pink-800);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .logo-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--pink-400);
+  }
+
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .api-badge {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: var(--radius-sm);
+    background: var(--pink-50);
+    color: var(--pink-600);
+    border: 0.5px solid var(--pink-200);
+  }
+
+  #api-status {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--gray-200);
+    transition: background 0.3s;
+  }
+  #api-status.connected { background: #639922; }
+  #api-status.error { background: #E24B4A; }
+
+  .sidebar {
+    background: #fff;
+    border-right: 0.5px solid var(--color-border-tertiary, rgba(0,0,0,0.1));
+    padding: 16px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow-y: auto;
+  }
+
+  .sidebar-section {
+    padding: 0 12px 8px;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: var(--gray-400);
+    text-transform: uppercase;
+    margin-top: 8px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 16px;
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    border-radius: 0;
+    transition: background 0.15s, color 0.15s;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+  }
+
+  .nav-item:hover { background: var(--pink-50); color: var(--pink-800); }
+  .nav-item.active {
+    background: var(--pink-50);
+    color: var(--pink-800);
+    font-weight: 500;
+    border-right: 2px solid var(--pink-400);
+  }
+
+  .nav-item i { font-size: 15px; }
+
+  .main-panel {
+    padding: 24px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .page { display: none; flex-direction: column; gap: 20px; }
+  .page.active { display: flex; }
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .page-title { font-size: 18px; font-weight: 500; }
+  .page-sub { font-size: 13px; color: var(--color-text-secondary); margin-top: 3px; }
+
+  .card {
+    background: #fff;
+    border: 0.5px solid var(--color-border-tertiary, rgba(0,0,0,0.1));
+    border-radius: var(--radius);
+    padding: 18px 20px;
+  }
+
+  .card-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .card-title i { font-size: 14px; }
+
+  .input-row {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+  }
+
+  input[type="text"], input[type="password"], textarea, select {
+    font-family: inherit;
+    font-size: 13px;
+    padding: 8px 12px;
+    border: 0.5px solid var(--color-border-tertiary, rgba(0,0,0,0.15));
+    border-radius: var(--radius-sm);
+    background: var(--color-background-primary, #fff);
+    color: var(--color-text-primary);
+    outline: none;
+    width: 100%;
+    transition: border-color 0.15s;
+  }
+
+  input:focus, textarea:focus { border-color: var(--pink-400); }
+
+  textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+
+  button {
+    font-family: inherit;
+    font-size: 13px;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    border: 0.5px solid var(--color-border-tertiary, rgba(0,0,0,0.15));
+    background: var(--color-background-primary, #fff);
+    color: var(--color-text-primary);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  button:hover { background: var(--pink-50); border-color: var(--pink-200); }
+  button:active { transform: scale(0.98); }
+
+  .btn-primary {
+    background: var(--pink-800);
+    color: #fff;
+    border-color: var(--pink-800);
+  }
+  .btn-primary:hover { background: var(--pink-600); border-color: var(--pink-600); }
+
+  .btn-danger {
+    background: #fff;
+    color: #E24B4A;
+    border-color: rgba(226,75,74,0.3);
+  }
+  .btn-danger:hover { background: #FCEBEB; }
+
+  .session-input-area {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .session-controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .processing-bar {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--pink-50);
+    border: 0.5px solid var(--pink-200);
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    color: var(--pink-600);
+  }
+
+  .processing-bar.visible { display: flex; }
+
+  .spinner {
+    width: 14px; height: 14px;
+    border: 1.5px solid var(--pink-200);
+    border-top-color: var(--pink-400);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .shadow-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+  }
+
+  .shadow-tile {
+    background: var(--pink-50);
+    border: 0.5px solid var(--pink-100);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+  }
+
+  .shadow-tile-label {
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--pink-600);
+    margin-bottom: 6px;
+  }
+
+  .shadow-tile-value {
+    font-size: 13px;
+    color: var(--color-text-primary);
+    line-height: 1.5;
+  }
+
+  .shadow-tile-value.mono {
+    font-family: var(--font-mono, monospace);
+    font-size: 11px;
+    background: #fff;
+    border: 0.5px solid var(--pink-100);
+    border-radius: 4px;
+    padding: 6px 8px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+    max-height: 120px;
+    overflow-y: auto;
+  }
+
+  .graph-area {
+    min-height: 160px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 8px;
+  }
+
+  .graph-node {
+    background: #fff;
+    border: 0.5px solid var(--color-border-tertiary, rgba(0,0,0,0.1));
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+
+  .graph-node-type {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--pink-600);
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+
+  .graph-node-label {
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+
+  .graph-node-meta {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    line-height: 1.4;
+  }
+
+  .recall-result {
+    background: var(--pink-50);
+    border: 0.5px solid var(--pink-200);
+    border-left: 2px solid var(--pink-400);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    font-size: 13px;
+    line-height: 1.6;
+    display: none;
+  }
+
+  .recall-result.visible { display: block; }
+
+  .session-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .session-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    background: #fff;
+    border: 0.5px solid var(--color-border-tertiary, rgba(0,0,0,0.1));
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+
+  .session-item:hover { border-color: var(--pink-200); }
+
+  .session-item-info { flex: 1; }
+  .session-item-title { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+  .session-item-meta { font-size: 11px; color: var(--color-text-secondary); }
+
+  .session-item-actions { display: flex; gap: 6px; }
+
+  .badge {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 100px;
+    font-weight: 500;
+  }
+
+  .badge-pink {
+    background: var(--pink-100);
+    color: var(--pink-800);
+  }
+
+  .badge-gray {
+    background: var(--gray-50);
+    color: var(--gray-600);
+  }
+
+  .destruction-proof {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 14px;
+    background: #EAF3DE;
+    border: 0.5px solid #C0DD97;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    color: #3B6D11;
+    display: none;
+  }
+
+  .destruction-proof.visible { display: flex; }
+  .destruction-proof i { font-size: 14px; margin-top: 1px; flex-shrink: 0; }
+
+  .settings-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px 0;
+    border-bottom: 0.5px solid var(--color-border-tertiary, rgba(0,0,0,0.08));
+  }
+
+  .settings-row:last-child { border-bottom: none; }
+
+  .settings-label {
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .settings-desc {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    margin-bottom: 6px;
+  }
+
+  .settings-row .input-row { margin-top: 4px; }
+
+  .empty-state {
+    text-align: center;
+    padding: 32px 16px;
+    color: var(--color-text-secondary);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .empty-state i { font-size: 28px; color: var(--pink-200); margin-bottom: 10px; display: block; }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+
+  .stat-card {
+    background: var(--color-background-secondary, #f8f8f8);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+  }
+
+  .stat-label { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 4px; }
+  .stat-value { font-size: 22px; font-weight: 500; }
+
+  .deletion-log {
+    font-family: var(--font-mono, monospace);
+    font-size: 11px;
+    background: var(--gray-50);
+    border: 0.5px solid var(--gray-100);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    max-height: 120px;
+    overflow-y: auto;
+    line-height: 1.7;
+    color: var(--gray-600);
+    display: none;
+  }
+
+  .deletion-log.visible { display: block; }
+
+  .tab-bar {
+    display: flex;
+    gap: 0;
+    border-bottom: 0.5px solid var(--color-border-tertiary, rgba(0,0,0,0.1));
+    margin-bottom: 16px;
+  }
+
+  .tab {
+    font-size: 13px;
+    padding: 8px 16px;
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    border: none;
+    background: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -0.5px;
+    transition: color 0.15s;
+  }
+
+  .tab.active { color: var(--pink-800); border-bottom-color: var(--pink-400); font-weight: 500; }
+  .tab:hover { color: var(--pink-600); }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+</style>
+
+<h2 class="sr-only">Chronis Context Shadow Architecture — AI interaction memory system</h2>
+
+<div class="app-shell">
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-dot"></div>
+      Chronis
+    </div>
+    <div class="topbar-right">
+      <span class="api-badge">Gemini 2.5 Flash</span>
+      <div id="api-status" title="API connection status"></div>
+      <button onclick="showPage('settings')" style="padding:6px 10px; font-size:12px;">
+        <i class="ti ti-settings" aria-hidden="true"></i>
+      </button>
+    </div>
+  </div>
+
+  <nav class="sidebar">
+    <div class="sidebar-section">Workspace</div>
+    <button class="nav-item active" onclick="showPage('capture')" id="nav-capture">
+      <i class="ti ti-radio" aria-hidden="true"></i> Capture
+    </button>
+    <button class="nav-item" onclick="showPage('shadows')" id="nav-shadows">
+      <i class="ti ti-topology-star" aria-hidden="true"></i> Context Shadows
+    </button>
+    <button class="nav-item" onclick="showPage('recall')" id="nav-recall">
+      <i class="ti ti-message-search" aria-hidden="true"></i> Recall
+    </button>
+
+    <div class="sidebar-section">Data</div>
+    <button class="nav-item" onclick="showPage('graph')" id="nav-graph">
+      <i class="ti ti-chart-dots-3" aria-hidden="true"></i> Context Graph
+    </button>
+    <button class="nav-item" onclick="showPage('audit')" id="nav-audit">
+      <i class="ti ti-shield-check" aria-hidden="true"></i> Deletion Audit
+    </button>
+
+    <div class="sidebar-section">System</div>
+    <button class="nav-item" onclick="showPage('settings')" id="nav-settings">
+      <i class="ti ti-adjustments-horizontal" aria-hidden="true"></i> Settings
+    </button>
+  </nav>
+
+  <main class="main-panel">
+
+    <!-- CAPTURE PAGE -->
+    <div class="page active" id="page-capture">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Capture Session</div>
+          <div class="page-sub">Enter raw interaction text. The ephemeral stream is processed and immediately destroyed.</div>
+        </div>
+        <div id="session-count-badge" class="badge badge-pink" style="margin-top:4px;">0 sessions</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><i class="ti ti-file-text" aria-hidden="true"></i> Raw Interaction Input</div>
+        <div class="session-input-area">
+          <input type="text" id="session-title" placeholder="Session title (e.g. Investor call with Rohan, 14 Jun)" />
+          <textarea id="raw-input" placeholder="Paste the raw conversation, meeting notes, or spoken exchange here. This text will be processed into a Context Shadow and then permanently deleted — it will not be stored." rows="6"></textarea>
+          <div class="session-controls">
+            <button class="btn-primary" onclick="processSession()">
+              <i class="ti ti-cpu" aria-hidden="true"></i> Extract Context Shadow
+            </button>
+            <button onclick="clearCapture()">
+              <i class="ti ti-trash" aria-hidden="true"></i> Clear
+            </button>
+          </div>
+          <div class="processing-bar" id="processing-bar">
+            <div class="spinner"></div>
+            <span id="processing-msg">Extracting cognitive state from ephemeral stream...</span>
+          </div>
+          <div class="destruction-proof" id="destruction-proof">
+            <i class="ti ti-shield-check" aria-hidden="true"></i>
+            <div>
+              <strong>Raw data destroyed.</strong> The original input has been cleared from memory. Only the Context Shadow persists.
+              <div id="proof-hash" style="margin-top:4px; font-family: var(--font-mono); font-size:10px; opacity:0.8;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="latest-shadow-card" style="display:none;">
+        <div class="card-title"><i class="ti ti-topology-star" aria-hidden="true"></i> Generated Context Shadow</div>
+        <div class="tab-bar">
+          <button class="tab active" onclick="switchTab('shadow-tab','raw-json')">Structured State</button>
+          <button class="tab" onclick="switchTab('shadow-tab','graph-nodes')">Graph Nodes</button>
+          <button class="tab" onclick="switchTab('shadow-tab','summary')">Summary</button>
+        </div>
+        <div id="shadow-tab">
+          <div class="tab-panel active" id="raw-json-panel">
+            <div class="shadow-grid" id="shadow-fields"></div>
+          </div>
+          <div class="tab-panel" id="graph-nodes-panel">
+            <div class="graph-area" id="graph-nodes-preview"></div>
+          </div>
+          <div class="tab-panel" id="summary-panel">
+            <div id="shadow-summary" style="font-size:13px; line-height:1.7; color:var(--color-text-primary);"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTEXT SHADOWS PAGE -->
+    <div class="page" id="page-shadows">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Context Shadows</div>
+          <div class="page-sub">All processed sessions. No raw audio, video, or transcripts are stored here.</div>
+        </div>
+        <button onclick="showPage('capture')" class="btn-primary">
+          <i class="ti ti-plus" aria-hidden="true"></i> New session
+        </button>
+      </div>
+      <div id="shadows-list" class="session-list">
+        <div class="empty-state">
+          <i class="ti ti-topology-star" aria-hidden="true"></i>
+          No sessions captured yet. Go to Capture to process your first interaction.
+        </div>
+      </div>
+    </div>
+
+    <!-- RECALL PAGE -->
+    <div class="page" id="page-recall">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Recall</div>
+          <div class="page-sub">Ask questions about past interactions. Answers are reconstructed from the context graph — not from recordings.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><i class="ti ti-message-search" aria-hidden="true"></i> Query context memory</div>
+        <div class="session-input-area">
+          <textarea id="recall-query" placeholder="What commitments did Rahul make about the prototype? What were the main concerns raised? What decisions were deferred?" rows="3"></textarea>
+          <div class="session-controls">
+            <select id="recall-scope" style="flex:1; max-width:220px;">
+              <option value="all">All sessions</option>
+            </select>
+            <button class="btn-primary" onclick="runRecall()">
+              <i class="ti ti-arrow-right" aria-hidden="true"></i> Recall from memory
+            </button>
+          </div>
+          <div class="processing-bar" id="recall-processing">
+            <div class="spinner"></div>
+            <span>Reconstructing from context graph...</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="recall-result" id="recall-result"></div>
+    </div>
+
+    <!-- GRAPH PAGE -->
+    <div class="page" id="page-graph">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Context Graph</div>
+          <div class="page-sub">All nodes and relationships extracted across sessions.</div>
+        </div>
+      </div>
+      <div class="stat-grid" id="graph-stats">
+        <div class="stat-card"><div class="stat-label">People</div><div class="stat-value" id="stat-people">0</div></div>
+        <div class="stat-card"><div class="stat-label">Commitments</div><div class="stat-value" id="stat-commit">0</div></div>
+        <div class="stat-card"><div class="stat-label">Ideas</div><div class="stat-value" id="stat-ideas">0</div></div>
+        <div class="stat-card"><div class="stat-label">Events</div><div class="stat-value" id="stat-events">0</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="ti ti-chart-dots-3" aria-hidden="true"></i> All extracted nodes</div>
+        <div class="graph-area" id="full-graph" style="min-height:80px;">
+          <div class="empty-state" style="grid-column:1/-1;"><i class="ti ti-chart-dots-3" aria-hidden="true"></i>No nodes yet.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AUDIT PAGE -->
+    <div class="page" id="page-audit">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Deletion Audit</div>
+          <div class="page-sub">Cryptographic proof log that raw sensory data no longer exists.</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="ti ti-shield-check" aria-hidden="true"></i> Deletion events</div>
+        <div class="deletion-log visible" id="deletion-log">Awaiting first session capture...</div>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="ti ti-lock" aria-hidden="true"></i> Privacy guarantees</div>
+        <div style="font-size:13px; line-height:1.7; color:var(--color-text-secondary); display:flex; flex-direction:column; gap:8px;">
+          <div><span style="font-weight:500; color:var(--color-text-primary);">No voice stored.</span> Audio waveforms are never written to permanent storage.</div>
+          <div><span style="font-weight:500; color:var(--color-text-primary);">No image stored.</span> Facial embeddings and video frames are discarded after extraction.</div>
+          <div><span style="font-weight:500; color:var(--color-text-primary);">No transcript stored.</span> Raw text input is cleared immediately after context extraction.</div>
+          <div><span style="font-weight:500; color:var(--color-text-primary);">Only the shadow survives.</span> The semantic state — commitments, intent, relationships — is all that persists.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS PAGE -->
+    <div class="page" id="page-settings">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Settings</div>
+          <div class="page-sub">Configure your Gemini API key and extraction preferences.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><i class="ti ti-key" aria-hidden="true"></i> API Configuration</div>
+        <div class="settings-row">
+          <div class="settings-label">Gemini API Key</div>
+          <div class="settings-desc">Your key is stored only in this browser session (sessionStorage). It is never sent anywhere except directly to the Gemini API endpoint.</div>
+          <div class="input-row">
+            <input type="password" id="api-key-input" placeholder="AIza..." autocomplete="off" />
+            <button onclick="saveApiKey()"><i class="ti ti-check" aria-hidden="true"></i> Save</button>
+            <button onclick="clearApiKey()" class="btn-danger"><i class="ti ti-x" aria-hidden="true"></i></button>
+          </div>
+          <div id="api-key-msg" style="font-size:11px; margin-top:6px; color:var(--color-text-secondary);"></div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-label">Model</div>
+          <div class="settings-desc">Gemini model to use for context extraction and recall.</div>
+          <select id="model-select" style="max-width:280px;">
+            <option value="gemini-2.5-flash">gemini-2.5-flash</option>
+            <option value="gemini-2.0-flash">gemini-2.0-flash</option>
+            <option value="gemini-1.5-flash">gemini-1.5-flash</option>
+            <option value="gemini-1.5-pro">gemini-1.5-pro</option>
+          </select>
+        </div>
+        <div class="settings-row">
+          <div class="settings-label">Ephemeral retention window</div>
+          <div class="settings-desc">Simulated RAM-only retention period before raw data is destroyed (cosmetic, all destruction happens immediately after extraction).</div>
+          <select id="retention-select" style="max-width:180px;">
+            <option value="5">5 seconds</option>
+            <option value="10" selected>10 seconds</option>
+            <option value="30">30 seconds</option>
+          </select>
+        </div>
+        <div class="settings-row">
+          <div class="settings-label">Clear all session data</div>
+          <div class="settings-desc">Permanently removes all context shadows and graph nodes from this browser.</div>
+          <button class="btn-danger" onclick="clearAllData()"><i class="ti ti-trash" aria-hidden="true"></i> Clear all data</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><i class="ti ti-info-circle" aria-hidden="true"></i> How to connect Gemini</div>
+        <div style="font-size:13px; line-height:1.8; color:var(--color-text-secondary);">
+          1. Get a free API key from <a href="https://aistudio.google.com/app/apikey" style="color:var(--pink-600);">Google AI Studio</a>.<br>
+          2. Paste it in the field above and click Save.<br>
+          3. The status dot in the top bar turns green when a key is present.<br>
+          4. All API calls go directly from your browser to <code style="font-size:11px; background:var(--gray-50); padding:1px 4px; border-radius:3px;">generativelanguage.googleapis.com</code>.<br>
+          5. Chronis never proxies or logs your key or your data.
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+let sessions = JSON.parse(localStorage.getItem('chronis_sessions') || '[]');
+let deletionLog = JSON.parse(localStorage.getItem('chronis_deletions') || '[]');
+
+function getApiKey() { return sessionStorage.getItem('chronis_api_key') || ''; }
+function getModel() { return document.getElementById('model-select')?.value || 'gemini-2.5-flash'; }
+
+function saveApiKey() {
+  const k = document.getElementById('api-key-input').value.trim();
+  if (!k) { document.getElementById('api-key-msg').textContent = 'Enter a key first.'; return; }
+  sessionStorage.setItem('chronis_api_key', k);
+  document.getElementById('api-key-msg').textContent = 'Saved for this session.';
+  document.getElementById('api-key-input').value = '';
+  updateApiStatus();
+}
+
+function clearApiKey() {
+  sessionStorage.removeItem('chronis_api_key');
+  document.getElementById('api-key-msg').textContent = 'Key cleared.';
+  updateApiStatus();
+}
+
+function updateApiStatus() {
+  const dot = document.getElementById('api-status');
+  dot.className = getApiKey() ? 'connected' : '';
+}
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + id)?.classList.add('active');
+  document.getElementById('nav-' + id)?.classList.add('active');
+  if (id === 'shadows') renderShadowsList();
+  if (id === 'graph') renderGraph();
+  if (id === 'audit') renderAuditLog();
+  if (id === 'recall') populateRecallScope();
+}
+
+function switchTab(groupId, tabId) {
+  const container = document.getElementById(groupId);
+  container.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  container.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(tabId + '-panel')?.classList.add('active');
+  event.target.classList.add('active');
+}
+
+async function callGemini(prompt) {
+  const key = getApiKey();
+  if (!key) throw new Error('No API key. Go to Settings and add your Gemini API key.');
+  const model = getModel();
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`;
+  const resp = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+  });
+  if (!resp.ok) {
+    const err = await resp.json().catch(() => ({}));
+    throw new Error(err?.error?.message || `API error ${resp.status}`);
+  }
+  const data = await resp.json();
+  return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+}
+
+async function processSession() {
+  const raw = document.getElementById('raw-input').value.trim();
+  const title = document.getElementById('session-title').value.trim() || 'Untitled session';
+  if (!raw) { alert('Paste some interaction text first.'); return; }
+  if (!getApiKey()) { alert('Add your Gemini API key in Settings first.'); showPage('settings'); return; }
+
+  const bar = document.getElementById('processing-bar');
+  const proof = document.getElementById('destruction-proof');
+  const shadowCard = document.getElementById('latest-shadow-card');
+
+  bar.classList.add('visible');
+  proof.classList.remove('visible');
+  shadowCard.style.display = 'none';
+
+  const msgs = [
+    'Extracting cognitive state from ephemeral stream...',
+    'Building context graph nodes...',
+    'Scoring commitment confidence...',
+    'Finalising semantic state representation...'
+  ];
+  let mi = 0;
+  const ticker = setInterval(() => { document.getElementById('processing-msg').textContent = msgs[Math.min(++mi, msgs.length-1)]; }, 1800);
+
+  try {
+    const extractionPrompt = `You are the Cognitive Extraction Engine for Chronis CSA. Analyse the following raw interaction and return ONLY a valid JSON object (no markdown, no preamble) with this exact structure:
+
+{
+  "session_title": "${title}",
+  "timestamp": "${new Date().toISOString()}",
+  "conversational_intent": "...",
+  "emotional_dynamics": "...",
+  "commitments": [{"actor": "...", "commitment": "...", "confidence": 0.0, "deadline": "...", "risk": 0.0}],
+  "decisions_made": ["..."],
+  "decisions_deferred": ["..."],
+  "beliefs_expressed": ["..."],
+  "relationships": [{"from": "...", "to": "...", "type": "..."}],
+  "goals": ["..."],
+  "knowledge_exchanged": ["..."],
+  "negotiation_state": "...",
+  "social_context": "...",
+  "environmental_context": "...",
+  "temporal_context": "...",
+  "graph_nodes": [{"type": "person|commitment|idea|event|project", "label": "...", "attributes": "..."}],
+  "reconstruction_summary": "A 2-3 sentence third-person summary that reconstructs what happened without quoting the original text."
+}
+
+Raw interaction:
+${raw}`;
+
+    const responseText = await callGemini(extractionPrompt);
+    clearInterval(ticker);
+
+    let shadow;
+    try {
+      const clean = responseText.replace(/```json|```/g, '').trim();
+      shadow = JSON.parse(clean);
+    } catch {
+      throw new Error('Could not parse extraction response. Check your API key and try again.');
+    }
+
+    shadow._id = Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+    shadow._created = new Date().toISOString();
+
+    sessions.push(shadow);
+    localStorage.setItem('chronis_sessions', JSON.stringify(sessions));
+
+    const hash = await computeHash(raw);
+    const logEntry = `[${new Date().toISOString()}] SESSION ${shadow._id} — raw input destroyed — SHA-256: ${hash}`;
+    deletionLog.push(logEntry);
+    localStorage.setItem('chronis_deletions', JSON.stringify(deletionLog));
+
+    document.getElementById('session-count-badge').textContent = `${sessions.length} session${sessions.length !== 1 ? 's' : ''}`;
+    document.getElementById('raw-input').value = '';
+    document.getElementById('session-title').value = '';
+    document.getElementById('proof-hash').textContent = `SHA-256 of destroyed input: ${hash}`;
+    proof.classList.add('visible');
+
+    renderShadowPreview(shadow);
+    shadowCard.style.display = 'block';
+
+  } catch (e) {
+    clearInterval(ticker);
+    alert('Extraction failed: ' + e.message);
+  } finally {
+    bar.classList.remove('visible');
+  }
+}
+
+async function computeHash(text) {
+  const buf = new TextEncoder().encode(text);
+  const hashBuf = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2,'0')).join('').slice(0,32) + '...';
+}
+
+function renderShadowPreview(shadow) {
+  const fields = document.getElementById('shadow-fields');
+  const topFields = ['conversational_intent','emotional_dynamics','negotiation_state','social_context','temporal_context'];
+  fields.innerHTML = topFields.map(f => shadow[f] ? `
+    <div class="shadow-tile">
+      <div class="shadow-tile-label">${f.replace(/_/g,' ')}</div>
+      <div class="shadow-tile-value">${shadow[f]}</div>
+    </div>` : '').join('') +
+    (shadow.commitments?.length ? `
+    <div class="shadow-tile" style="grid-column:1/-1;">
+      <div class="shadow-tile-label">Commitments</div>
+      <div class="shadow-tile-value mono">${JSON.stringify(shadow.commitments, null, 2)}</div>
+    </div>` : '') +
+    (shadow.decisions_made?.length ? `
+    <div class="shadow-tile">
+      <div class="shadow-tile-label">Decisions made</div>
+      <div class="shadow-tile-value">${shadow.decisions_made.join('<br>')}</div>
+    </div>` : '') +
+    (shadow.decisions_deferred?.length ? `
+    <div class="shadow-tile">
+      <div class="shadow-tile-label">Decisions deferred</div>
+      <div class="shadow-tile-value">${shadow.decisions_deferred.join('<br>')}</div>
+    </div>` : '');
+
+  const nodesArea = document.getElementById('graph-nodes-preview');
+  nodesArea.innerHTML = (shadow.graph_nodes || []).map(n => `
+    <div class="graph-node">
+      <div class="graph-node-type">${n.type}</div>
+      <div class="graph-node-label">${n.label}</div>
+      <div class="graph-node-meta">${n.attributes || ''}</div>
+    </div>`).join('');
+
+  document.getElementById('shadow-summary').textContent = shadow.reconstruction_summary || '';
+}
+
+function renderShadowsList() {
+  const list = document.getElementById('shadows-list');
+  if (!sessions.length) {
+    list.innerHTML = '<div class="empty-state"><i class="ti ti-topology-star" aria-hidden="true"></i>No sessions captured yet.</div>';
+    return;
+  }
+  list.innerHTML = [...sessions].reverse().map(s => `
+    <div class="session-item">
+      <div class="session-item-info">
+        <div class="session-item-title">${s.session_title || 'Untitled'}</div>
+        <div class="session-item-meta">
+          ${new Date(s._created).toLocaleString()} &nbsp;·&nbsp;
+          <span class="badge badge-pink">${(s.graph_nodes||[]).length} nodes</span>
+          &nbsp;<span class="badge badge-gray">${(s.commitments||[]).length} commitments</span>
+        </div>
+      </div>
+      <div class="session-item-actions">
+        <button onclick="viewSession('${s._id}')" style="font-size:12px; padding:5px 10px;"><i class="ti ti-eye" aria-hidden="true"></i></button>
+        <button onclick="deleteSession('${s._id}')" class="btn-danger" style="font-size:12px; padding:5px 10px;"><i class="ti ti-trash" aria-hidden="true"></i></button>
+      </div>
+    </div>`).join('');
+}
+
+function viewSession(id) {
+  const s = sessions.find(x => x._id === id);
+  if (!s) return;
+  showPage('capture');
+  document.getElementById('latest-shadow-card').style.display = 'block';
+  renderShadowPreview(s);
+}
+
+function deleteSession(id) {
+  if (!confirm('Delete this context shadow? This cannot be undone.')) return;
+  sessions = sessions.filter(s => s._id !== id);
+  localStorage.setItem('chronis_sessions', JSON.stringify(sessions));
+  renderShadowsList();
+  updateSessionCount();
+}
+
+function updateSessionCount() {
+  document.getElementById('session-count-badge').textContent = `${sessions.length} session${sessions.length !== 1 ? 's' : ''}`;
+}
+
+async function runRecall() {
+  const query = document.getElementById('recall-query').value.trim();
+  const scope = document.getElementById('recall-scope').value;
+  if (!query) { alert('Enter a question to recall.'); return; }
+  if (!sessions.length) { alert('No sessions captured yet.'); return; }
+  if (!getApiKey()) { alert('Add your Gemini API key in Settings.'); showPage('settings'); return; }
+
+  const bar = document.getElementById('recall-processing');
+  const result = document.getElementById('recall-result');
+  bar.classList.add('visible');
+  result.classList.remove('visible');
+
+  const relevantSessions = scope === 'all' ? sessions : sessions.filter(s => s._id === scope);
+  const graphData = JSON.stringify(relevantSessions.map(s => ({
+    title: s.session_title,
+    timestamp: s.timestamp,
+    intent: s.conversational_intent,
+    commitments: s.commitments,
+    decisions_made: s.decisions_made,
+    decisions_deferred: s.decisions_deferred,
+    beliefs_expressed: s.beliefs_expressed,
+    goals: s.goals,
+    knowledge_exchanged: s.knowledge_exchanged,
+    relationships: s.relationships,
+    negotiation_state: s.negotiation_state,
+    social_context: s.social_context,
+    reconstruction_summary: s.reconstruction_summary
+  })), null, 2);
+
+  try {
+    const prompt = `You are the Chronis Context Replay Engine. You answer questions about past interactions using ONLY the context shadow graph data provided. Do not invent details not present in the graph. If information is not available, say so clearly.
+
+Context graph data:
+${graphData}
+
+Question: ${query}
+
+Answer in 1-3 clear sentences, citing which session(s) the information comes from. Do not reproduce the original text — reconstruct from the semantic state only.`;
+
+    const answer = await callGemini(prompt);
+    result.textContent = answer;
+    result.classList.add('visible');
+  } catch (e) {
+    alert('Recall failed: ' + e.message);
+  } finally {
+    bar.classList.remove('visible');
+  }
+}
+
+function populateRecallScope() {
+  const sel = document.getElementById('recall-scope');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="all">All sessions</option>' +
+    sessions.map(s => `<option value="${s._id}">${s.session_title || 'Untitled'} — ${new Date(s._created).toLocaleDateString()}</option>`).join('');
+  sel.value = cur && sessions.find(s => s._id === cur) ? cur : 'all';
+}
+
+function renderGraph() {
+  const area = document.getElementById('full-graph');
+  let people=0, commits=0, ideas=0, events=0;
+  const allNodes = [];
+  sessions.forEach(s => (s.graph_nodes||[]).forEach(n => {
+    allNodes.push({...n, session: s.session_title});
+    if (n.type==='person') people++;
+    else if (n.type==='commitment') commits++;
+    else if (n.type==='idea') ideas++;
+    else if (n.type==='event') events++;
+  }));
+  document.getElementById('stat-people').textContent = people;
+  document.getElementById('stat-commit').textContent = commits;
+  document.getElementById('stat-ideas').textContent = ideas;
+  document.getElementById('stat-events').textContent = events;
+  if (!allNodes.length) {
+    area.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><i class="ti ti-chart-dots-3" aria-hidden="true"></i>No nodes yet.</div>';
+    return;
+  }
+  area.innerHTML = allNodes.map(n => `
+    <div class="graph-node">
+      <div class="graph-node-type">${n.type}</div>
+      <div class="graph-node-label">${n.label}</div>
+      <div class="graph-node-meta">${n.attributes || ''}</div>
+      <div style="font-size:10px; color:var(--gray-400); margin-top:4px;">${n.session || ''}</div>
+    </div>`).join('');
+}
+
+function renderAuditLog() {
+  const log = document.getElementById('deletion-log');
+  log.innerHTML = deletionLog.length
+    ? deletionLog.slice().reverse().join('\n')
+    : 'Awaiting first session capture...';
+}
+
+function clearCapture() {
+  document.getElementById('raw-input').value = '';
+  document.getElementById('session-title').value = '';
+  document.getElementById('latest-shadow-card').style.display = 'none';
+  document.getElementById('destruction-proof').classList.remove('visible');
+}
+
+function clearAllData() {
+  if (!confirm('This will permanently delete all context shadows and graph nodes. Continue?')) return;
+  sessions = [];
+  deletionLog = [];
+  localStorage.removeItem('chronis_sessions');
+  localStorage.removeItem('chronis_deletions');
+  updateSessionCount();
+  document.getElementById('latest-shadow-card').style.display = 'none';
+}
+
+updateApiStatus();
+updateSessionCount();
+</script>

@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self' https://generativelanguage.googleapis.com; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com 'self';" />
+  <title>Chronis</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/app.css" />
+</head>
+<body>
+
+<div class="app-shell" id="app">
+
+  <!-- TITLEBAR (macOS inset / Windows custom) -->
+  <div class="titlebar" id="titlebar">
+    <div class="titlebar-drag"></div>
+    <div class="titlebar-center">
+      <span class="titlebar-logo">Chronis</span>
+    </div>
+    <div class="titlebar-right">
+      <div class="api-pill" id="api-pill">No API key</div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="nav-section">Workspace</div>
+    <button class="nav-item active" data-page="capture">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+      Capture
+    </button>
+    <button class="nav-item" data-page="shadows">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="5" r="3"/><circle cx="5" cy="19" r="3"/><circle cx="19" cy="19" r="3"/><line x1="12" y1="8" x2="5" y2="16"/><line x1="12" y1="8" x2="19" y2="16"/></svg>
+      Context Shadows
+    </button>
+    <button class="nav-item" data-page="recall">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Recall
+    </button>
+
+    <div class="nav-section">Data</div>
+    <button class="nav-item" data-page="graph">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="6" height="6" rx="1"/><rect x="16" y="2" width="6" height="6" rx="1"/><rect x="9" y="16" width="6" height="6" rx="1"/><line x1="8" y1="5" x2="16" y2="5"/><line x1="12" y1="8" x2="12" y2="16"/></svg>
+      Context Graph
+    </button>
+    <button class="nav-item" data-page="audit">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Deletion Audit
+    </button>
+
+    <div class="nav-section">System</div>
+    <button class="nav-item" data-page="settings">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Settings
+    </button>
+
+    <div class="sidebar-footer">
+      <div id="session-count" class="session-count">0 sessions</div>
+    </div>
+  </nav>
+
+  <!-- MAIN PANEL -->
+  <main class="main-panel" id="main-panel">
+
+    <!-- ── CAPTURE ── -->
+    <section class="page active" id="page-capture">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Capture</h1>
+          <p class="page-sub">Record or paste a raw interaction. It will be processed into a Context Shadow and permanently destroyed.</p>
+        </div>
+      </div>
+
+      <!-- Microphone capture -->
+      <div class="card" id="mic-card">
+        <div class="card-label">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+          Live microphone capture
+        </div>
+        <div class="mic-area">
+          <div class="mic-visualiser" id="mic-vis">
+            <div class="vis-bar" style="height:6px"></div>
+            <div class="vis-bar" style="height:6px"></div>
+            <div class="vis-bar" style="height:6px"></div>
+            <div class="vis-bar" style="height:6px"></div>
+            <div class="vis-bar" style="height:6px"></div>
+            <div class="vis-bar" style="height:6px"></div>
+            <div class="vis-bar" style="height:6px"></div>
+            <div class="vis-bar" style="height:6px"></div>
+          </div>
+          <div class="mic-controls">
+            <button class="btn-primary" id="btn-record" onclick="toggleRecording()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="10"/></svg>
+              Start recording
+            </button>
+            <span class="rec-timer" id="rec-timer" style="display:none">0:00</span>
+            <span class="rec-status" id="rec-status"></span>
+          </div>
+          <div class="mic-note">Recorded audio is kept in RAM only. It is transcribed via Gemini and then discarded — never written to disk.</div>
+        </div>
+      </div>
+
+      <!-- Manual text input -->
+      <div class="card">
+        <div class="card-label">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Manual input
+        </div>
+        <div class="form-group">
+          <input type="text" id="session-title" placeholder="Session title  —  e.g. Investor call with Rohan, 14 Jun" class="text-input" />
+        </div>
+        <div class="form-group">
+          <textarea id="raw-input" class="textarea" rows="7"
+            placeholder="Paste the raw conversation, meeting notes, or spoken exchange here.&#10;&#10;This text will be processed into a Context Shadow and then permanently deleted. It will not be stored anywhere."></textarea>
+        </div>
+        <div class="form-row">
+          <button class="btn-primary" onclick="processSession()" id="btn-extract">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            Extract Context Shadow
+          </button>
+          <button onclick="clearCapture()">Clear</button>
+        </div>
+
+        <div class="status-bar" id="processing-bar" style="display:none">
+          <div class="spinner"></div>
+          <span id="processing-msg">Extracting cognitive state...</span>
+        </div>
+
+        <div class="proof-bar" id="destruction-proof" style="display:none">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+          <div>
+            <strong>Raw data destroyed.</strong> The original input has been cleared. Only the Context Shadow persists.
+            <div id="proof-hash" class="proof-hash"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Shadow preview -->
+      <div class="card" id="shadow-preview-card" style="display:none">
+        <div class="card-label">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="5" r="3"/><circle cx="5" cy="19" r="3"/><circle cx="19" cy="19" r="3"/><line x1="12" y1="8" x2="5" y2="16"/><line x1="12" y1="8" x2="19" y2="16"/></svg>
+          Generated Context Shadow
+        </div>
+
+        <div class="tabs" id="capture-tabs">
+          <button class="tab active" data-tab="fields">Structured state</button>
+          <button class="tab" data-tab="nodes">Graph nodes</button>
+          <button class="tab" data-tab="summary">Summary</button>
+          <button class="tab" data-tab="raw">Raw JSON</button>
+        </div>
+
+        <div class="tab-content active" id="tab-fields"></div>
+        <div class="tab-content" id="tab-nodes"></div>
+        <div class="tab-content" id="tab-summary"></div>
+        <div class="tab-content" id="tab-raw"></div>
+      </div>
+    </section>
+
+    <!-- ── CONTEXT SHADOWS ── -->
+    <section class="page" id="page-shadows">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Context Shadows</h1>
+          <p class="page-sub">All processed sessions. No raw audio, video, or source text is stored here.</p>
+        </div>
+        <button class="btn-primary" onclick="nav('capture')">New session</button>
+      </div>
+      <div id="shadows-list"></div>
+    </section>
+
+    <!-- ── RECALL ── -->
+    <section class="page" id="page-recall">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Recall</h1>
+          <p class="page-sub">Ask questions. Answers are reconstructed from the context graph — not from any recording.</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-label">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Query context memory
+        </div>
+        <div class="form-group">
+          <textarea id="recall-query" class="textarea" rows="3"
+            placeholder="What commitments did Rahul make? What concerns were raised? What decisions were deferred?"></textarea>
+        </div>
+        <div class="form-row">
+          <select id="recall-scope" class="select" style="flex:1; max-width:260px;"></select>
+          <button class="btn-primary" onclick="runRecall()">Recall from memory</button>
+        </div>
+        <div class="status-bar" id="recall-bar" style="display:none">
+          <div class="spinner"></div>
+          <span>Reconstructing from context graph...</span>
+        </div>
+      </div>
+      <div class="recall-result" id="recall-result" style="display:none"></div>
+    </section>
+
+    <!-- ── CONTEXT GRAPH ── -->
+    <section class="page" id="page-graph">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Context Graph</h1>
+          <p class="page-sub">All nodes extracted across sessions.</p>
+        </div>
+      </div>
+      <div class="stat-row" id="graph-stats">
+        <div class="stat-card"><div class="stat-label">People</div><div class="stat-val" id="stat-people">0</div></div>
+        <div class="stat-card"><div class="stat-label">Commitments</div><div class="stat-val" id="stat-commit">0</div></div>
+        <div class="stat-card"><div class="stat-label">Ideas</div><div class="stat-val" id="stat-ideas">0</div></div>
+        <div class="stat-card"><div class="stat-label">Events</div><div class="stat-val" id="stat-events">0</div></div>
+        <div class="stat-card"><div class="stat-label">Projects</div><div class="stat-val" id="stat-projects">0</div></div>
+      </div>
+      <div class="card">
+        <div class="card-label">All extracted nodes</div>
+        <div class="node-grid" id="full-graph"></div>
+      </div>
+    </section>
+
+    <!-- ── DELETION AUDIT ── -->
+    <section class="page" id="page-audit">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Deletion Audit</h1>
+          <p class="page-sub">Cryptographic proof log that raw interaction data no longer exists.</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-label">Privacy guarantees</div>
+        <div class="guarantee-list">
+          <div class="guarantee-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#3B6D11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+            <div><strong>No voice stored.</strong> Audio waveforms are never written to permanent storage. Transcription uses RAM only.</div>
+          </div>
+          <div class="guarantee-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#3B6D11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+            <div><strong>No transcript stored.</strong> Raw text input is cleared immediately after context extraction completes.</div>
+          </div>
+          <div class="guarantee-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#3B6D11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+            <div><strong>Only the shadow survives.</strong> Commitments, intent, relationships — no identity, voice, or biometric data.</div>
+          </div>
+          <div class="guarantee-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#3B6D11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+            <div><strong>Cryptographic proof.</strong> SHA-256 hashes prove which data was processed. Without the pre-image, reconstruction is impossible.</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-label">Deletion event log</div>
+        <div class="audit-log" id="audit-log">Awaiting first session...</div>
+      </div>
+    </section>
+
+    <!-- ── SETTINGS ── -->
+    <section class="page" id="page-settings">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Settings</h1>
+          <p class="page-sub">API configuration and extraction preferences.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Gemini API</div>
+
+        <div class="settings-row">
+          <div class="settings-label">API Key</div>
+          <div class="settings-desc">Stored only in the app's local config file on your machine. Never sent anywhere except directly to <code>generativelanguage.googleapis.com</code>.</div>
+          <div class="form-row" style="margin-top:8px;">
+            <input type="password" id="api-key-input" class="text-input" placeholder="AIza..." autocomplete="off" style="flex:1;" />
+            <button onclick="saveApiKey()" class="btn-primary">Save</button>
+            <button onclick="clearApiKey()" class="btn-danger">Remove</button>
+          </div>
+          <div id="api-key-msg" class="settings-msg"></div>
+        </div>
+
+        <div class="settings-row">
+          <div class="settings-label">Model</div>
+          <div class="settings-desc">Gemini model used for context extraction and recall.</div>
+          <select id="model-select" class="select" style="max-width:260px; margin-top:8px;">
+            <option value="gemini-2.5-flash">gemini-2.5-flash</option>
+            <option value="gemini-2.0-flash">gemini-2.0-flash</option>
+            <option value="gemini-1.5-flash">gemini-1.5-flash</option>
+            <option value="gemini-1.5-pro">gemini-1.5-pro</option>
+          </select>
+        </div>
+
+        <div class="settings-row">
+          <div class="settings-label">Ephemeral retention window</div>
+          <div class="settings-desc">Simulated RAM-only window before transcription is destroyed. Real destruction is immediate after extraction.</div>
+          <select id="retention-select" class="select" style="max-width:180px; margin-top:8px;">
+            <option value="5">5 seconds</option>
+            <option value="10" selected>10 seconds</option>
+            <option value="30">30 seconds</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Storage</div>
+        <div class="settings-row" style="border-bottom:none;">
+          <div class="settings-label">Data directory</div>
+          <div class="settings-desc" id="data-dir-path" style="font-family:monospace; font-size:11px; margin-top:4px;">Loading...</div>
+        </div>
+        <div class="settings-row" style="border-bottom:none;">
+          <div class="settings-label">Clear all session data</div>
+          <div class="settings-desc">Permanently removes all context shadows and graph nodes from this device.</div>
+          <button class="btn-danger" style="margin-top:8px;" onclick="clearAllData()">Clear all data</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">How to get a Gemini API key</div>
+        <ol class="how-list">
+          <li>Visit <strong>aistudio.google.com</strong> and sign in with your Google account.</li>
+          <li>Click <strong>Get API key</strong> in the left sidebar.</li>
+          <li>Create a new key or copy an existing one.</li>
+          <li>Paste it in the field above and click Save.</li>
+          <li>The status pill in the top bar will turn green.</li>
+        </ol>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script src="js/gemini.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
